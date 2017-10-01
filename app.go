@@ -8,12 +8,27 @@ import (
 
 type App struct {
 	WebhookURL string
+	Channel    string
+	UserName   string
+	IconURL    string
+	IconEmoji  string
+}
+
+func pstr(s string) *string {
+	return &s
 }
 
 func (app *App) forward(p *Payload) error {
+	att := slack.Attachment{
+		Title:     pstr(fmt.Sprintf("%s#%s@%s", p.TeamDomain, p.ChannelName, p.UserName)),
+		TitleLink: pstr(fmt.Sprintf("https://%s.slack.com/archives/%s/", p.TeamDomain, p.ChannelID)),
+		Text:      pstr(p.Text),
+	}
 	slackPayload := slack.Payload{
-		Text: fmt.Sprintf("Team: %s, Chanel: %s User: %s, Msg: %s\n",
-			p.TeamDomain, p.ChannelName, p.UserName, p.Text),
+		Username:    app.UserName,
+		IconUrl:     app.IconURL,
+		IconEmoji:   app.IconEmoji,
+		Attachments: []slack.Attachment{att},
 	}
 	errs := slack.Send(app.WebhookURL, "", slackPayload)
 	if len(errs) > 0 {

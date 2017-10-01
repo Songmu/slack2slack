@@ -47,5 +47,3 @@ func assignPayloadMessage(w http.ResponseWriter, r *http.Request) {
 func handle(p *Payload) error {
 	return nil
 }
-
-

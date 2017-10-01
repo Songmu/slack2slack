@@ -24,7 +24,7 @@ func assignPayloadMessage(w http.ResponseWriter, r *http.Request) {
 	p := &Payload{
 		Token:       r.FormValue("token"),
 		TeamID:      r.FormValue("team_id"),
-		TeamDoamin:  r.FormValue("team_domain"),
+		TeamDomain:  r.FormValue("team_domain"),
 		ChannelID:   r.FormValue("channel_id"),
 		ChannelName: r.FormValue("channel_name"),
 		UserID:      r.FormValue("user_id"),

@@ -12,12 +12,12 @@ type App struct {
 
 func (app *App) forward(p *Payload) error {
 	slackPayload := slack.Payload{
-		Text: fmt.Printf("Team: %s, Chanel: %s User: %s, Msg: %s\n",
-			p.TeamDomain, p, ChannelName, p.UserName, p.Text),
+		Text: fmt.Sprintf("Team: %s, Chanel: %s User: %s, Msg: %s\n",
+			p.TeamDomain, p.ChannelName, p.UserName, p.Text),
 	}
 	errs := slack.Send(app.WebhookURL, "", slackPayload)
 	if len(errs) > 0 {
-		return fmt.Errorf("error occured while sending payload to slack incomming hook: %#v", err)
+		return fmt.Errorf("error occured while sending payload to slack incomming hook: %#v", errs)
 	}
 	return nil
 }

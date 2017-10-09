@@ -32,7 +32,7 @@ func (app *App) forward(p *Payload) error {
 	}
 	errs := slack.Send(app.WebhookURL, "", slackPayload)
 	if len(errs) > 0 {
-		return fmt.Errorf("error occured while sending payload to slack incomming hook: %#v", errs)
+		return fmt.Errorf("error occurred while sending payload to slack incomming hook: %#v", errs)
 	}
 	return nil
 }

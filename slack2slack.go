@@ -19,8 +19,28 @@ type Payload struct {
 	TriggerWord string
 }
 
+type Web struct {
+	HandlePayload func(*Payload) error
+}
+
 // https://api.slack.com/custom-integrations/outgoing-webhooks
-func assignPayloadMessage(w http.ResponseWriter, r *http.Request) {
+func (we *Web) Handle(w http.ResponseWriter, r *http.Request) {
+	p, err := request2payload(r)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	hn := defaultHandlePayload
+	if we.HandlePayload != nil {
+		hn = we.HandlePayload
+	}
+	err = hn(p)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return
+}
+
+func request2payload(r *http.Request) (*Payload, error) {
 	p := &Payload{
 		Token:       r.FormValue("token"),
 		TeamID:      r.FormValue("team_id"),
@@ -34,16 +54,14 @@ func assignPayloadMessage(w http.ResponseWriter, r *http.Request) {
 	}
 	ts, err := strconv.ParseFloat(r.FormValue("timestamp"), 64)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return nil, err
 	}
 	epSec := int64(ts)
 	epNsec := int64((ts - float64(epSec)) * float64(time.Nanosecond))
 	p.Timestamp = time.Unix(epSec, epNsec)
-	handle(p)
-	return
+	return p, nil
 }
 
-func handle(p *Payload) error {
+func defaultHandlePayload(p *Payload) error {
 	return nil
 }
